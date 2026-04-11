@@ -1,3 +1,5 @@
-export default function MaintenancePage() {
-  return <div>Maintenance — coming soon</div>
+import { MaintenancePage } from '@/components/MaintenancePage/MaintenancePage'
+
+export default function Maintenance() {
+  return <MaintenancePage />
 }
