@@ -1,5 +1,6 @@
 'use client'
 
+import { useRef } from 'react'
 import { addDays, formatDisplayDate, isToday, isFuture, todayString } from '@/lib/dateUtils'
 import styles from './DateNavigator.module.css'
 
@@ -11,6 +12,7 @@ interface Props {
 export function DateNavigator({ date, onChange }: Props) {
   const nextDate = addDays(date, 1)
   const canGoNext = !isFuture(nextDate)
+  const dateInputRef = useRef<HTMLInputElement>(null)
 
   function handleDateInput(e: React.ChangeEvent<HTMLInputElement>) {
     const val = e.target.value
@@ -31,9 +33,10 @@ export function DateNavigator({ date, onChange }: Props) {
         ‹
       </button>
 
-      <div className={styles.dateWrapper}>
+      <div className={styles.dateWrapper} onClick={() => dateInputRef.current?.showPicker()}>
         <span className={styles.dateLabel}>{formatDisplayDate(date)}</span>
         <input
+          ref={dateInputRef}
           type="date"
           value={date}
           max={todayString()}
