@@ -93,29 +93,27 @@ export function MoodPage() {
 
         <div className={styles.section}>
           <MoodSelector value={mood} onChange={setMood} />
+          <label className={styles.trophyRow}>
+            <input
+              type="checkbox"
+              checked={hasTrophy}
+              onChange={e => setHasTrophy(e.target.checked)}
+            />
+            I have the trophy 🏆
+          </label>
         </div>
 
         <div className={styles.section}>
           <span className={styles.label}>Drawing</span>
-          <div className={styles.canvasRow}>
-            <DrawingCanvas
-              ref={canvasRef}
-              brushSize={brushSize}
-              brushShape={brushShape}
-              color={color}
-              onBrushSizeChange={setBrushSize}
-              onBrushShapeChange={setBrushShape}
-              onColorChange={setColor}
-            />
-            <label className={styles.trophyRow}>
-              <input
-                type="checkbox"
-                checked={hasTrophy}
-                onChange={e => setHasTrophy(e.target.checked)}
-              />
-              I have the trophy 🏆
-            </label>
-          </div>
+          <DrawingCanvas
+            ref={canvasRef}
+            brushSize={brushSize}
+            brushShape={brushShape}
+            color={color}
+            onBrushSizeChange={setBrushSize}
+            onBrushShapeChange={setBrushShape}
+            onColorChange={setColor}
+          />
         </div>
 
         {error && <p className={styles.error}>{error}</p>}
