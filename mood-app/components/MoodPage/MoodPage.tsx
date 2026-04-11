@@ -20,7 +20,7 @@ export function MoodPage() {
   const [error, setError] = useState('')
 
   // Toolbar state lifted here so MoodPage owns it
-  const [brushSize, setBrushSize] = useState(7)
+  const [brushSize, setBrushSize] = useState(8)
   const [brushShape, setBrushShape] = useState<'round' | 'square'>('round')
   const [color, setColor] = useState('#000000')
 
