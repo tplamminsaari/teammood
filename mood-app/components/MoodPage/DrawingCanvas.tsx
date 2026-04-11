@@ -288,6 +288,10 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
           onMouseMove={handlePointerMove}
           onMouseUp={handlePointerUp}
           onMouseLeave={() => { handlePointerUp(); lastPos.current = null; setCursorPos(null) }}
+          onTouchStart={(e) => { if (e.touches.length === 1) handlePointerDown(e as unknown as React.MouseEvent) }}
+          onTouchMove={(e) => { if (e.touches.length === 1) handlePointerMove(e as unknown as React.MouseEvent) }}
+          onTouchEnd={handlePointerUp}
+          onTouchCancel={handlePointerUp}
         />
         {cursorPos && (
           <div
