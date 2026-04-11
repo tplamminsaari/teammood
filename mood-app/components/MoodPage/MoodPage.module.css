@@ -28,6 +28,7 @@
   border: 1.5px solid var(--border);
   border-radius: var(--radius-md);
   padding: 8px 14px;
+  text-align: center;
 }
 
 .section {
