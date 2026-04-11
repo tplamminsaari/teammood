@@ -240,13 +240,6 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
           <button
             type="button"
             className={styles.actionBtn}
-            onClick={handleClear}
-          >
-            Clear
-          </button>
-          <button
-            type="button"
-            className={styles.actionBtn}
             disabled={undoStack.current.length === 0}
             onClick={() => {
               if (undoStack.current.length > 0) {
