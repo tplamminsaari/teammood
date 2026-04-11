@@ -62,7 +62,9 @@
 
 .actions {
   display: flex;
-  gap: 12px;
+  justify-content: space-between;
+  margin-left: 80px;
+  width: 500px;
   padding-top: 8px;
 }
 
