@@ -1,3 +1,5 @@
-export default function TeamPage() {
-  return <div>Team view — coming soon</div>
+import { TeamPage } from '@/components/TeamPage/TeamPage'
+
+export default function Team() {
+  return <TeamPage />
 }

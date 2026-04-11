@@ -8,9 +8,8 @@ export const db: Pool = globalForPg.pgPool ?? new Pool({
   connectionString: process.env.DATABASE_URL,
 })
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForPg.pgPool = db
-}
+// Always cache — Next.js preserves module state between requests in both dev and prod
+globalForPg.pgPool = db
 
 let schemaInitialised = false
 
