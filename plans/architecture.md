@@ -136,6 +136,7 @@ CREATE TABLE mood_entries (
   entry_date   DATE         NOT NULL,
   mood_rating  SMALLINT     NOT NULL CHECK (mood_rating BETWEEN 1 AND 5),
   image_data   TEXT,                          -- base64-encoded JPEG; NULL if no image submitted
+  has_trophy   BOOLEAN      NOT NULL DEFAULT FALSE,
   submitted_at TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
   UNIQUE (user_id, entry_date)
 );
@@ -160,6 +161,7 @@ CREATE TABLE daily_config (
 - `name_lower` is populated on insert as `LOWER(name)`. Used for case-insensitive uniqueness checks without a function index.
 - `image_data` is `TEXT` (base64 JPEG). A 500×500 JPEG at medium quality is roughly 20–80 KB, which is fine for PostgreSQL text storage at the expected data volumes (biweekly sprints, ~20 users).
 - `UNIQUE(user_id, entry_date)` on `mood_entries` enforces one entry per user per day at the DB level. The API uses `INSERT ... ON CONFLICT DO UPDATE` (upsert) for re-submissions.
+- `has_trophy` is self-reported by the user via a checkbox on the Mood Selection view. No server-side enforcement of a single trophy holder — the team handles that culturally.
 - Deleting a `mood_entry` cascades to its `likes`.
 
 ---
@@ -183,11 +185,11 @@ POST /api/users
 ### Entries
 ```
 GET  /api/entries?date=YYYY-MM-DD
-     Response: { entries: [ { id, userId, userName, moodRating, imageData, submittedAt, likeCount, likedByMe } ] }
+     Response: { entries: [ { id, userId, userName, moodRating, imageData, hasTrophy, submittedAt, likeCount, likedByMe } ] }
      likedByMe requires ?userId=N query param
 
 POST /api/entries
-     Body:    { userId, moodRating, imageData }  (imageData is base64 JPEG string)
+     Body:    { userId, moodRating, imageData, hasTrophy }  (imageData is base64 JPEG string)
      Action:  Upsert — INSERT or UPDATE for today's entry for this user
      Response: { entry: { id, submittedAt } }
 ```

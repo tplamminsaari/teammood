@@ -64,7 +64,7 @@ docker-compose down         # Stop (data is not persisted by design)
 
 ```
 users          id, name, name_lower (unique), last_active
-mood_entries   id, user_id, entry_date, mood_rating, image_data, submitted_at  [UNIQUE user_id+entry_date]
+mood_entries   id, user_id, entry_date, mood_rating, image_data, has_trophy, submitted_at  [UNIQUE user_id+entry_date]
 likes          id, entry_id, user_id  [UNIQUE entry_id+user_id, CASCADE on entry delete]
 daily_config   config_date (PK), sprint_name
 ```

@@ -83,7 +83,7 @@ Reference documents:
 
 ### T11 · Entries submit API
 **Status:** `todo`
-**Description:** Implement `POST /api/entries` — upserts a mood entry for today (INSERT ... ON CONFLICT DO UPDATE). Returns the entry id and submitted_at timestamp.
+**Description:** Implement `POST /api/entries` — upserts a mood entry for today (INSERT ... ON CONFLICT DO UPDATE). Accepts `{ userId, moodRating, imageData, hasTrophy }`. Returns the entry id and submitted_at timestamp.
 **Requires:** T02
 **Produces:** `POST` handler in `app/api/entries/route.ts`
 
@@ -107,13 +107,13 @@ Reference documents:
 
 ### T15 · Mood Selection view and submit flow
 **Status:** `todo`
-**Description:** Build the `/mood` page. Shows "Hi [Name]!" label, MoodSelector, DrawingCanvas, Cancel (→ /team) and Continue (enabled only when mood selected) buttons. On Continue: export canvas as JPEG base64 via `toDataURL('image/jpeg', 0.85)`, POST to `/api/entries`, navigate to `/team`. Redirects to `/` if no user in localStorage.
+**Description:** Build the `/mood` page. Shows "Hi [Name]!" label, MoodSelector, DrawingCanvas, "I have the trophy" checkbox (unchecked by default), Cancel (→ /team) and Continue (enabled only when mood selected) buttons. On Continue: export canvas as JPEG base64 via `toDataURL('image/jpeg', 0.85)`, POST `{ userId, moodRating, imageData, hasTrophy }` to `/api/entries`, navigate to `/team`. Redirects to `/` if no user in localStorage.
 **Requires:** T11, T12, T14
 **Produces:** `app/mood/page.tsx`, `components/MoodPage/MoodPage.tsx` + CSS
 
 ### T16 · Pre-load existing submission in Mood Selection
 **Status:** `todo`
-**Description:** When opening `/mood` and the user has already submitted today, fetch their existing entry and pre-populate the mood selector and canvas image. Show "Already submitted today at HH:MM" label. Pressing Continue overwrites silently.
+**Description:** When opening `/mood` and the user has already submitted today, fetch their existing entry and pre-populate the mood selector, canvas image, and trophy checkbox. Show "Already submitted today at HH:MM" label. Pressing Continue overwrites silently.
 **Requires:** T15
 **Produces:** Addition to `app/mood/page.tsx` / `MoodPage.tsx`
 
@@ -123,7 +123,7 @@ Reference documents:
 
 ### T17 · MoodBadge component
 **Status:** `todo`
-**Description:** Fixed 160×200px card. Shows: mood image (or white square if none), name, mood rating with emoji (e.g. "3 😐"), like section (hollow/filled heart + count). Heart is non-interactive on past dates. Clicking the image area opens the overlay.
+**Description:** Fixed 160×200px card. Shows: mood image (or white square if none), name, mood rating with emoji (e.g. "3 😐"), like section (hollow/filled heart + count). The image area has two corner overlays: like section bottom-left, 🏆 emoji bottom-right (only when `hasTrophy` is true). Heart is non-interactive on past dates. Clicking the image area opens the overlay.
 **Requires:** T01
 **Produces:** `components/TeamPage/MoodBadge.tsx` + CSS
 

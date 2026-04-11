@@ -109,15 +109,16 @@ Teammood is a frictionless, internal-network web app that helps a Scrum team war
   - **Clear canvas** button (resets to white)
 - **Upload from device** button — opens file picker, accepts PNG and JPEG. Loaded image is resized and center-cropped to fill the 500×500 canvas. User can then draw over it. Uploading resets the undo history.
 - **Undo** (Ctrl+Z) — steps back through drawing actions. History is cleared on image upload or clear canvas.
+- **"I have the trophy" checkbox** — self-reported. When checked, a 🏆 emoji is shown on the user's badge in the Team view. Unchecked by default.
 - **Cancel** button (secondary, left) — returns to Team view, no data saved
 - **Continue** button (primary, right) — enabled only when a mood (1–5) is selected; canvas drawing is optional (a blank/white image is valid)
 
 **Behavior:**
 - On load, the app checks whether the current user (name from localStorage) has already submitted today.
-  - If **yes**: the previously selected mood is pre-selected and the previously submitted image is loaded onto the canvas. A label is shown near the top of the view: "Already submitted today at [HH:MM]". The user can modify the mood and/or redraw and press **Continue** again to overwrite their submission silently.
-  - If **no**: the view starts empty (no mood selected, blank canvas).
-- Mood must be selected before **Continue** is enabled. The canvas is optional.
-- On **Continue**: canvas content is exported as JPEG, bundled with the selected mood and user name, and submitted to the backend. On success, navigate to Team view.
+  - If **yes**: the previously selected mood is pre-selected, the previously submitted image is loaded onto the canvas, and the trophy checkbox reflects the previous value. A label is shown near the top of the view: "Already submitted today at [HH:MM]". The user can modify any field and press **Continue** again to overwrite silently.
+  - If **no**: the view starts empty (no mood selected, blank canvas, trophy unchecked).
+- Mood must be selected before **Continue** is enabled. The canvas and trophy checkbox are optional.
+- On **Continue**: canvas content is exported as JPEG, bundled with the selected mood, trophy flag, and user name, and submitted to the backend. On success, navigate to Team view.
 - If submission fails: show an inline error and stay on this view; do not lose the canvas content or mood selection.
 
 **UX notes:**
@@ -146,7 +147,9 @@ Teammood is a frictionless, internal-network web app that helps a Scrum team war
 **Mood Badge (per person):**
 - Size: fixed at approximately 160px wide × 200px tall. No dynamic resizing — the view scrolls vertically if badges overflow the viewport.
 - Contents (top to bottom):
-  - Mood image (square, fills most of the badge width)
+  - Mood image (square, fills most of the badge width). The image area has two corner overlays:
+    - Bottom-left: like section (heart icon + count)
+    - Bottom-right: 🏆 trophy emoji, shown only if the user checked "I have the trophy"
   - Name (truncated if long)
   - Mood rating: number + emoji (e.g. "3 😐")
   - Like section: heart icon + like count. The heart is hollow when the current user has not liked this badge, and filled when they have. Tapping toggles between liked and unliked. Only the total count is shown — who liked whom is not displayed.
