@@ -33,6 +33,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
 ) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const isDrawing = useRef(false)
+  const lastPos = useRef<{ x: number; y: number } | null>(null)
   const undoStack = useRef<ImageData[]>([])
 
   function getCtx() {
@@ -94,21 +95,41 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     }
   }
 
+  // Stamp the brush at every pixel along the segment from `from` to `to`
+  // so fast mouse movement never produces gaps.
+  function drawSegment(
+    ctx: CanvasRenderingContext2D,
+    from: { x: number; y: number },
+    to: { x: number; y: number }
+  ) {
+    const dx = to.x - from.x
+    const dy = to.y - from.y
+    const dist = Math.sqrt(dx * dx + dy * dy)
+    const steps = Math.max(1, Math.ceil(dist))
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps
+      applyBrush(ctx, from.x + dx * t, from.y + dy * t)
+    }
+  }
+
   function handlePointerDown(e: React.MouseEvent) {
     isDrawing.current = true
     pushUndo()
-    const { x, y } = getPos(e)
-    applyBrush(getCtx(), x, y)
+    const pos = getPos(e)
+    lastPos.current = pos
+    applyBrush(getCtx(), pos.x, pos.y)
   }
 
   function handlePointerMove(e: React.MouseEvent) {
-    if (!isDrawing.current) return
-    const { x, y } = getPos(e)
-    applyBrush(getCtx(), x, y)
+    if (!isDrawing.current || !lastPos.current) return
+    const pos = getPos(e)
+    drawSegment(getCtx(), lastPos.current, pos)
+    lastPos.current = pos
   }
 
   function handlePointerUp() {
     isDrawing.current = false
+    lastPos.current = null
   }
 
   function handleClear() {
@@ -231,7 +252,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
           onMouseDown={handlePointerDown}
           onMouseMove={handlePointerMove}
           onMouseUp={handlePointerUp}
-          onMouseLeave={handlePointerUp}
+          onMouseLeave={() => { handlePointerUp(); lastPos.current = null }}
         />
       </div>
     </div>

@@ -198,3 +198,12 @@ Reference documents:
 **Description:** Rewrite `README.md` to document the application — what it is, how to run it locally with Docker, how to deploy to Vercel + Supabase, and the environment variable required. Should be clear enough for a new team member to get it running without reading the concept or plans documents.
 **Requires:** T03, T26
 **Produces:** Updated `README.md`
+
+---
+
+## Finetuning
+
+### T28 · Continuous brush strokes on canvas
+**Status:** `done`
+**Description:** Fast mouse movement produces dotted/gapped lines because the canvas only stamps the brush at individual mouse event positions. Fix by interpolating intermediate stamps along the straight-line segment between the previous and current mouse position on every `mousemove` event. Stamp spacing should be small enough (~1px step) to guarantee no visible gaps at any brush size or mouse speed.
+**Produces:** Updated `DrawingCanvas.tsx`
