@@ -1,0 +1,122 @@
+.page {
+  min-height: 100vh;
+  padding: 32px 24px 48px;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+}
+
+.inner {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.greeting {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.alreadySubmitted {
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--bg-subtle);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px 14px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.uploadBtn {
+  align-self: flex-start;
+  padding: 7px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--bg);
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.uploadBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.trophyRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.trophyRow input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.cancelBtn {
+  padding: 10px 24px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--bg);
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.cancelBtn:hover {
+  border-color: var(--text-muted);
+  color: var(--text);
+}
+
+.continueBtn {
+  padding: 10px 28px;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+  transition: background 0.15s;
+}
+
+.continueBtn:hover:not(:disabled) {
+  background: var(--accent-dark);
+}
+
+.continueBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.error {
+  font-size: 13px;
+  color: var(--mood-1);
+}

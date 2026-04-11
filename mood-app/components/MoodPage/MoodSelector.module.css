@@ -1,0 +1,50 @@
+.selector {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.btn {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-full);
+  border: 2.5px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: var(--bg);
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  cursor: pointer;
+}
+
+.btn:hover {
+  transform: scale(1.08);
+}
+
+.emoji {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.number {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* Per-mood selected colours */
+.selected-1 { background: var(--mood-1); border-color: var(--mood-1); }
+.selected-2 { background: var(--mood-2); border-color: var(--mood-2); }
+.selected-3 { background: var(--mood-3); border-color: var(--mood-3); }
+.selected-4 { background: var(--mood-4); border-color: var(--mood-4); }
+.selected-5 { background: var(--mood-5); border-color: var(--mood-5); }
+
+.selected-1 .number,
+.selected-2 .number,
+.selected-3 .number,
+.selected-4 .number,
+.selected-5 .number {
+  color: #fff;
+}

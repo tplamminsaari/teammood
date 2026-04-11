@@ -1,3 +1,5 @@
-export default function MoodPage() {
-  return <div>Mood selection — coming soon</div>
+import { MoodPage } from '@/components/MoodPage/MoodPage'
+
+export default function Mood() {
+  return <MoodPage />
 }
