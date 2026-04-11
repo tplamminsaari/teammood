@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react'
+import { useRef, useState, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react'
 import styles from './DrawingCanvas.module.css'
 
 const COLORS = [
@@ -35,6 +35,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   const isDrawing = useRef(false)
   const lastPos = useRef<{ x: number; y: number } | null>(null)
   const undoStack = useRef<ImageData[]>([])
+  const [undoCount, setUndoCount] = useState(0)
 
   function getCtx() {
     return canvasRef.current!.getContext('2d')!
@@ -55,6 +56,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
         if (undoStack.current.length > 0) {
           const snapshot = undoStack.current.pop()!
           getCtx().putImageData(snapshot, 0, 0)
+          setUndoCount(undoStack.current.length)
         }
       }
     }
@@ -64,6 +66,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
 
   function pushUndo() {
     undoStack.current.push(getCtx().getImageData(0, 0, 500, 500))
+    setUndoCount(undoStack.current.length)
   }
 
   function getPos(e: React.MouseEvent | React.TouchEvent): { x: number; y: number } {
@@ -152,7 +155,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
       ctx.fillStyle = '#ffffff'
       ctx.fillRect(0, 0, 500, 500)
       ctx.drawImage(img, sx, sy, size, size, 0, 0, 500, 500)
-      undoStack.current = [] // Clear undo history after upload
+      undoStack.current = []
+      setUndoCount(0)
     }
     img.src = dataUrl
   }, [])
@@ -188,11 +192,12 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
           <button
             type="button"
             className={styles.actionBtn}
-            disabled={undoStack.current.length === 0}
+            disabled={undoCount === 0}
             onClick={() => {
               if (undoStack.current.length > 0) {
                 const snapshot = undoStack.current.pop()!
                 getCtx().putImageData(snapshot, 0, 0)
+                setUndoCount(undoStack.current.length)
               }
             }}
           >
