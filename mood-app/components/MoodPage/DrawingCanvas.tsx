@@ -157,6 +157,23 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     img.src = dataUrl
   }, [])
 
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  function handleUploadClick() {
+    fileInputRef.current?.click()
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = ev => {
+      loadImage(ev.target?.result as string)
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
   useImperativeHandle(ref, () => ({
     toDataURL: () => canvasRef.current!.toDataURL('image/jpeg', 0.85),
     loadImage,
@@ -240,6 +257,20 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
           >
             Undo
           </button>
+          <button
+            type="button"
+            className={styles.actionBtn}
+            onClick={handleUploadClick}
+          >
+            Upload
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/png,image/jpeg"
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+          />
         </div>
       </div>
 

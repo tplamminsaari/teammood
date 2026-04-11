@@ -20,12 +20,11 @@ export function MoodPage() {
   const [error, setError] = useState('')
 
   // Toolbar state lifted here so MoodPage owns it
-  const [brushSize, setBrushSize] = useState(20)
+  const [brushSize, setBrushSize] = useState(7)
   const [brushShape, setBrushShape] = useState<'round' | 'square'>('round')
   const [color, setColor] = useState('#000000')
 
   const canvasRef = useRef<DrawingCanvasHandle>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Route guard
   useEffect(() => {
@@ -54,23 +53,6 @@ export function MoodPage() {
   }, [user])
 
   if (!ready || !user) return null
-
-  function handleUploadClick() {
-    fileInputRef.current?.click()
-  }
-
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = ev => {
-      const dataUrl = ev.target?.result as string
-      canvasRef.current?.loadImage(dataUrl)
-    }
-    reader.readAsDataURL(file)
-    // Reset input so the same file can be re-selected
-    e.target.value = ''
-  }
 
   async function handleContinue() {
     if (!mood || !user) return
@@ -110,41 +92,31 @@ export function MoodPage() {
         )}
 
         <div className={styles.section}>
-          <span className={styles.label}>Mood</span>
           <MoodSelector value={mood} onChange={setMood} />
         </div>
 
         <div className={styles.section}>
           <span className={styles.label}>Drawing</span>
-          <DrawingCanvas
-            ref={canvasRef}
-            brushSize={brushSize}
-            brushShape={brushShape}
-            color={color}
-            onBrushSizeChange={setBrushSize}
-            onBrushShapeChange={setBrushShape}
-            onColorChange={setColor}
-          />
-          <button type="button" className={styles.uploadBtn} onClick={handleUploadClick}>
-            Upload from device
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/png,image/jpeg"
-            style={{ display: 'none' }}
-            onChange={handleFileChange}
-          />
+          <div className={styles.canvasRow}>
+            <DrawingCanvas
+              ref={canvasRef}
+              brushSize={brushSize}
+              brushShape={brushShape}
+              color={color}
+              onBrushSizeChange={setBrushSize}
+              onBrushShapeChange={setBrushShape}
+              onColorChange={setColor}
+            />
+            <label className={styles.trophyRow}>
+              <input
+                type="checkbox"
+                checked={hasTrophy}
+                onChange={e => setHasTrophy(e.target.checked)}
+              />
+              I have the trophy 🏆
+            </label>
+          </div>
         </div>
-
-        <label className={styles.trophyRow}>
-          <input
-            type="checkbox"
-            checked={hasTrophy}
-            onChange={e => setHasTrophy(e.target.checked)}
-          />
-          I have the trophy 🏆
-        </label>
 
         {error && <p className={styles.error}>{error}</p>}
 
