@@ -204,7 +204,7 @@ Reference documents:
 ## Phase 9 — Access Protection
 
 ### T29 · Application ID guard
-**Status:** `todo`
+**Status:** `done`
 **Description:** Add lightweight obscurity protection so random bots and accidental visitors cannot access the app.
 
 - Add `APPLICATION_ID` environment variable (GUID, server-side only).
