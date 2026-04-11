@@ -124,7 +124,15 @@
   border: 2px solid var(--border);
   border-radius: var(--radius-sm);
   overflow: hidden;
-  cursor: crosshair;
+  cursor: none;
+}
+
+.brushCursor {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  border: 1.5px solid rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6);
 }
 
 .canvas {

@@ -36,6 +36,7 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   const lastPos = useRef<{ x: number; y: number } | null>(null)
   const undoStack = useRef<ImageData[]>([])
   const [undoCount, setUndoCount] = useState(0)
+  const [cursorPos, setCursorPos] = useState<{ x: number; y: number } | null>(null)
 
   function getCtx() {
     return canvasRef.current!.getContext('2d')!
@@ -124,8 +125,9 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   }
 
   function handlePointerMove(e: React.MouseEvent) {
-    if (!isDrawing.current || !lastPos.current) return
     const pos = getPos(e)
+    setCursorPos(pos)
+    if (!isDrawing.current || !lastPos.current) return
     drawSegment(getCtx(), lastPos.current, pos)
     lastPos.current = pos
   }
@@ -285,8 +287,20 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
           onMouseDown={handlePointerDown}
           onMouseMove={handlePointerMove}
           onMouseUp={handlePointerUp}
-          onMouseLeave={() => { handlePointerUp(); lastPos.current = null }}
+          onMouseLeave={() => { handlePointerUp(); lastPos.current = null; setCursorPos(null) }}
         />
+        {cursorPos && (
+          <div
+            className={styles.brushCursor}
+            style={{
+              left: cursorPos.x,
+              top: cursorPos.y,
+              width: brushSize,
+              height: brushSize,
+              borderRadius: brushShape === 'round' ? '50%' : '0',
+            }}
+          />
+        )}
       </div>
     </div>
   )
