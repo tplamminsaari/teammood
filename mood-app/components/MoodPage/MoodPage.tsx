@@ -132,7 +132,7 @@ export function MoodPage() {
             disabled={!mood || submitting}
             onClick={handleContinue}
           >
-            {submitting ? 'Submitting…' : 'Continue'}
+            {submitting ? 'Submitting…' : 'Submit'}
           </button>
         </div>
       </div>
