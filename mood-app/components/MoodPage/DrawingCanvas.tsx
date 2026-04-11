@@ -183,6 +183,23 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   return (
     <div className={styles.wrapper}>
       <div className={styles.toolbar}>
+        {/* Undo */}
+        <div className={styles.toolGroup}>
+          <button
+            type="button"
+            className={styles.actionBtn}
+            disabled={undoStack.current.length === 0}
+            onClick={() => {
+              if (undoStack.current.length > 0) {
+                const snapshot = undoStack.current.pop()!
+                getCtx().putImageData(snapshot, 0, 0)
+              }
+            }}
+          >
+            Undo
+          </button>
+        </div>
+
         {/* Brush size */}
         <div className={styles.toolGroup}>
           <span className={styles.toolLabel}>Size</span>
@@ -235,21 +252,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
           </div>
         </div>
 
-        {/* Actions */}
+        {/* Upload */}
         <div className={styles.toolGroup}>
-          <button
-            type="button"
-            className={styles.actionBtn}
-            disabled={undoStack.current.length === 0}
-            onClick={() => {
-              if (undoStack.current.length > 0) {
-                const snapshot = undoStack.current.pop()!
-                getCtx().putImageData(snapshot, 0, 0)
-              }
-            }}
-          >
-            Undo
-          </button>
           <button
             type="button"
             className={styles.actionBtn}
