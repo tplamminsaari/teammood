@@ -10,7 +10,7 @@ const COLORS = [
   '#a855f7', '#ec4899', '#92400e', '#fef3c7',
 ]
 
-const SIZES = [3, 8, 40]
+const SIZES = [3, 12, 40]
 
 export interface DrawingCanvasHandle {
   toDataURL: () => string
