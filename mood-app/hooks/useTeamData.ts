@@ -14,10 +14,10 @@ export function useTeamData(date: string, userId: number | null) {
     data: entriesData,
     mutate: mutateEntries,
     isLoading: entriesLoading,
-  } = useSWR(entriesKey, fetcher, { refreshInterval: 3000 })
+  } = useSWR(entriesKey, fetcher, { refreshInterval: 8000 })
 
   const { data: configData, mutate: mutateConfig } = useSWR(configKey, fetcher, {
-    refreshInterval: 10000,
+    refreshInterval: 8000,
   })
 
   const entries: MoodEntry[] = entriesData?.entries ?? []
