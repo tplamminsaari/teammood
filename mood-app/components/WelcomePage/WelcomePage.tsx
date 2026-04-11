@@ -76,7 +76,7 @@ export function WelcomePage() {
       </div>
 
       <div className={styles.card}>
-        <div className={styles.appName}>Teammood</div>
+        <div className={styles.appName}>Mood</div>
         <h1 className={styles.heading}>What&apos;s your mood today?</h1>
 
         <div className={styles.inputRow}>

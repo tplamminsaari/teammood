@@ -107,7 +107,7 @@ export function TeamPage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <span className={styles.appName}>Teammood</span>
+        <span className={styles.appName}>Mood</span>
 
         <DateNavigator date={date} onChange={setDate} />
 
