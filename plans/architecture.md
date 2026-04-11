@@ -264,13 +264,31 @@ For 20 concurrent users polling every 3 seconds, that is ~7 requests/second — 
 ### Routing & Navigation
 
 ```
-/           Welcome view      Always accessible
-/team       Team view         Requires name in localStorage; redirects to / if missing
-/mood       Mood Selection    Requires name in localStorage; redirects to / if missing
-/maintenance Maintenance view  No access control
+/           Welcome view      Requires valid app ID (see below)
+/team       Team view         Requires valid app ID + name in localStorage
+/mood       Mood Selection    Requires valid app ID + name in localStorage
+/maintenance Maintenance view  Requires valid app ID
 ```
 
 Navigation is handled with `next/navigation` (`useRouter`, `redirect`). There is no auth middleware — the localStorage check is a client-side guard.
+
+### Application ID Protection
+
+A lightweight obscurity guard prevents random bots and accidental visitors from accessing the app.
+
+**How it works:**
+1. `APPLICATION_ID` environment variable holds a GUID set by the operator (server-side only, never sent to the browser).
+2. On first visit the URL must include `?appid=<guid>`. A root-level `AppIdGuard` client component reads this query param and validates it against `GET /api/appid` (which compares against the server-side env var).
+3. On success the GUID is stored in `sessionStorage`. Subsequent navigation within the same browser session does not require the query param again.
+4. If validation fails (wrong or missing ID) the app renders an error screen and nothing else loads.
+5. If `APPLICATION_ID` is not set (local Docker dev), the guard is skipped entirely.
+
+**Why sessionStorage (not cookies or repeated query params):**
+- sessionStorage is cleared when the tab is closed — no long-lived leakage.
+- Users don't need to carry the query param in every internal link.
+- The GUID is still required fresh in each new tab/window.
+
+**What this protects against:** bots, crawlers, and accidental discovery via a guessable URL. It does not protect against someone who has seen the full URL — the GUID is visible in browser history and shared links.
 
 ### State Management
 
@@ -307,9 +325,12 @@ When a user presses the heart icon:
 
 ```env
 DATABASE_URL=postgresql://user:password@host:5432/dbname
+APPLICATION_ID=<guid>
 ```
 
-This is the only required environment variable. The same Next.js build runs in both environments.
+`DATABASE_URL` is required in all environments. `APPLICATION_ID` is required in production (Vercel); it can be left unset for local Docker development to skip the check entirely.
+
+The same Next.js build runs in both environments.
 
 ### Cloud — Vercel + Supabase
 
@@ -434,5 +455,6 @@ CMD ["npm", "start"]
 | ORM | None (raw `pg`) | Schema is small and stable; raw SQL is transparent and easy to hand off |
 | State management | SWR + local hooks | No global store needed; data lives close to the components that use it |
 | Auth | None | Internal tool; name + localStorage is sufficient |
+| Access protection | App ID GUID in query param, validated once per session via sessionStorage | Prevents bots and accidental discovery without requiring a full auth system; skipped in local Docker dev |
 | Drawing | HTML5 Canvas (no library) | The required feature set (freehand, brush, colour, undo, upload) is achievable without a dependency |
 | Docker data persistence | None (by design) | Data loss on restart is acceptable; simplifies Docker setup; Maintenance view handles cleanup anyway |

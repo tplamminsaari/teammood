@@ -201,6 +201,22 @@ Reference documents:
 
 ---
 
+## Phase 9 — Access Protection
+
+### T29 · Application ID guard
+**Status:** `todo`
+**Description:** Add lightweight obscurity protection so random bots and accidental visitors cannot access the app.
+
+- Add `APPLICATION_ID` environment variable (GUID, server-side only).
+- Add `GET /api/appid` route handler that returns `{ valid: boolean }` — compares a submitted ID against `process.env.APPLICATION_ID`. Returns `{ valid: true }` always if the env var is not set (local dev bypass).
+- Add `AppIdGuard` client component that wraps the root layout. On mount it checks sessionStorage for a previously validated ID. If missing, it reads the `?appid=` query param and calls `GET /api/appid`. On success it stores the ID in sessionStorage and renders children. On failure it renders a plain error screen ("Access denied") and nothing else.
+- Add `APPLICATION_ID` to `.env.local.example` (commented out, with a note that omitting it disables the check).
+
+**Requires:** T01
+**Produces:** `app/api/appid/route.ts`, `components/AppIdGuard.tsx`, additions to `app/layout.tsx`, `.env.local.example`
+
+---
+
 ## Finetuning
 
 ### T28 · Continuous brush strokes on canvas
