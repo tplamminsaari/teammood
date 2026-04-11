@@ -45,7 +45,7 @@ Reference documents:
 
 ### T06 · Welcome view
 **Status:** `todo`
-**Description:** Build the `/` page. Name text input pre-filled from localStorage. Quick-select name chips fetched from `GET /api/users`. Join button calls `POST /api/users`, saves result via `useCurrentUser`, navigates to `/team`.
+**Description:** Build the `/` page. Name text input pre-filled from localStorage. Quick-select name chips fetched from `GET /api/users`. Join button calls `POST /api/users`, saves result via `useCurrentUser`, navigates to `/team`. ⋮ menu button (top-right) with a "Maintenance" item that navigates to `/maintenance`.
 **Requires:** T04, T05
 **Produces:** `app/page.tsx`, `components/WelcomePage/` (WelcomePage.tsx, NameInput.tsx, CSS)
 
@@ -67,7 +67,7 @@ Reference documents:
 
 ### T09 · Team view layout and date navigator
 **Status:** `todo`
-**Description:** Build the `/team` page shell. Header bar with: app name, date display + date picker (no future dates; selecting future resets to today), sprint name field (editable today, read-only on past dates), average mood display. Badge grid area (placeholder). Empty state. FAB (`+` button, hidden on past dates). Redirects to `/` if no user in localStorage.
+**Description:** Build the `/team` page shell. Header bar with: app name, date display + date picker (no future dates; selecting future resets to today), sprint name field (editable today, read-only on past dates), average mood display, ⋮ menu button (top-right) with a "Maintenance" item that navigates to `/maintenance`. Badge grid area (placeholder). Empty state. FAB (`+` button, hidden on past dates). Redirects to `/` if no user in localStorage.
 **Requires:** T08
 **Produces:** `app/team/page.tsx`, `components/TeamPage/TeamPage.tsx`, `components/TeamPage/DateNavigator.tsx`, CSS
 
@@ -167,7 +167,7 @@ Reference documents:
 
 ### T23 · Maintenance view
 **Status:** `todo`
-**Description:** Build the `/maintenance` page. Stats summary at top. Four cleanup actions, each with: a date input (where applicable), a "Preview" button (calls API and shows count without deleting), and a "Confirm" button that performs the deletion and refreshes stats. Reset Today has no date input — just Preview + Confirm.
+**Description:** Build the `/maintenance` page. Accessible via the ⋮ menu on Welcome and Team views (or directly via URL). Stats summary at top. Four cleanup actions, each with: a date input (where applicable), a "Preview" button (calls API and shows count without deleting), and a "Confirm" button that performs the deletion and refreshes stats. Reset Today has no date input — just Preview + Confirm.
 **Requires:** T22
 **Produces:** `app/maintenance/page.tsx`, `components/MaintenancePage/` + CSS
 

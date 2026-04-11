@@ -74,6 +74,7 @@ Teammood is a frictionless, internal-network web app that helps a Scrum team war
 
 **Elements:**
 - App name / logo (small, top area)
+- **⋮ three-dots menu button** (top-right corner) — opens a small dropdown with a "Maintenance" option that navigates to `/maintenance`
 - Heading: something like "What's your mood today?"
 - Text input for name
 - A "previously used names" section below the input showing names from the system (quick-tap chips or a small list)
@@ -140,6 +141,7 @@ Teammood is a frictionless, internal-network web app that helps a Scrum team war
   - Displayed date (shows today by default). Editable: clicking/tapping the date opens a date picker. Future dates are not selectable — selecting one resets to today. A **Go to date** button confirms navigation.
   - Sprint name field. Stored per day — each day starts empty. When viewing today: inline editable, changes saved immediately and synced to all connected users in real-time. When viewing a past date: shown as read-only text. Intended as a bonus display feature on sprint review days.
   - Average mood indicator (e.g. "Team mood: 3.8 ★" or a visual bar). Updates live as new submissions arrive.
+  - **⋮ three-dots menu button** (top-right of header) — opens a small dropdown with a "Maintenance" option that navigates to `/maintenance`
 - **Badge grid:** Left-to-right, top-to-bottom layout. Submission order = badge order = demo order.
 - **Empty state:** When no submissions exist for the selected date: "No moods submitted for this day."
 - **Floating action button (FAB):** A large **+** button fixed to the bottom-right corner. Only visible when today's date is selected. Pressing it navigates to Mood Selection. Hidden when browsing a past date.
@@ -171,9 +173,9 @@ Teammood is a frictionless, internal-network web app that helps a Scrum team war
 
 ### 4. Maintenance View
 
-**Purpose:** Housekeeping for the maintainer. Minimal, functional, hidden.
+**Purpose:** Housekeeping for the maintainer. Minimal, functional.
 
-**Access:** Via a known URL path (e.g. `/maintenance`). No authentication; security by obscurity.
+**Access:** Via the ⋮ menu on the Welcome view or Team view. The `/maintenance` URL also works directly.
 
 **Summary section:**
 - Total registered users

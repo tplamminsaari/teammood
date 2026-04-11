@@ -171,6 +171,9 @@ CREATE TABLE daily_config (
 All endpoints return JSON. Error responses follow `{ error: string }`.
 
 ### Users
+A **⋮ three-dots menu** is present on both the Welcome view and the Team view header. It contains a single "Maintenance" item that navigates to `/maintenance`. The menu is a simple dropdown — no dedicated API endpoint needed.
+
+### Users
 ```
 GET  /api/users
      Response: { users: [ { id, name, lastActive } ] }

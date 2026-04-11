@@ -47,7 +47,7 @@ docker-compose down         # Stop (data is not persisted by design)
 | `/` | Welcome — name input, localStorage pre-fill, name chips |
 | `/team` | Team view — badge grid, date navigator, sprint name, FAB |
 | `/mood` | Mood Selection — mood buttons, drawing canvas, submit |
-| `/maintenance` | Maintenance — stats, cleanup operations (hidden URL) |
+| `/maintenance` | Maintenance — stats, cleanup operations (accessible via ⋮ menu on Welcome and Team views) |
 
 `/team` and `/mood` redirect to `/` if no name is found in localStorage.
 
