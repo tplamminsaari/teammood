@@ -225,14 +225,16 @@ Reference documents:
 **Produces:** Updated `DrawingCanvas.tsx`
 
 ### T30 · GIF Image Support
-**Status:** `todo`
+**Status:** `done`
 **Description:** Modify the frontend to support GIF images. When uploading an animated GIF, display the image instead of the canvas and disable all drawing tools. For non-animated GIFs or static images, place them on the canvas allowing users to draw over them.
 **Requires:** T14
 **Produces:**
-- Updated `DrawingCanvas.tsx` to detect animated GIFs
+- Updated `DrawingCanvas.tsx` to detect animated GIFs using frame comparison
 - Conditional rendering: show canvas with drawing tools for static images, show image preview with disabled tools for animated GIFs
 - Updated file upload to accept GIF format (`image/gif`)
 - Logic to determine if uploaded image is animated GIF
+- Preserve original GIF data for animated images
+- Visual indication when drawing tools are disabled
 
 ### T31 · Animated Like Notification
 **Status:** `todo`
