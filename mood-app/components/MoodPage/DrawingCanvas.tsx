@@ -37,6 +37,8 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   const undoStack = useRef<ImageData[]>([])
   const [undoCount, setUndoCount] = useState(0)
   const [cursorPos, setCursorPos] = useState<{ x: number; y: number } | null>(null)
+  const [isGifAnimated, setIsGifAnimated] = useState(false)
+  const [currentImageDataUrl, setCurrentImageDataUrl] = useState<string | null>(null)
 
   function getCtx() {
     return canvasRef.current!.getContext('2d')!
@@ -144,23 +146,72 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
     ctx.fillRect(0, 0, 500, 500)
   }
 
-  const loadImage = useCallback((dataUrl: string) => {
-    const img = new Image()
-    img.onload = () => {
-      // Center-crop to 500×500
-      const sw = img.naturalWidth
-      const sh = img.naturalHeight
-      const size = Math.min(sw, sh)
-      const sx = (sw - size) / 2
-      const sy = (sh - size) / 2
-      const ctx = getCtx()
-      ctx.fillStyle = '#ffffff'
-      ctx.fillRect(0, 0, 500, 500)
-      ctx.drawImage(img, sx, sy, size, size, 0, 0, 500, 500)
-      undoStack.current = []
-      setUndoCount(0)
+  // Function to detect if an image is an animated GIF
+  function detectAnimatedGif(dataUrl: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        // Simple heuristic: check if the image has multiple frames
+        // This is not perfect but works for most cases
+        try {
+          // Try to detect animation by creating a canvas and checking if
+          // the image renders differently over time
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          
+          if (ctx) {
+            ctx.drawImage(img, 0, 0);
+            const firstFrame = ctx.getImageData(0, 0, 1, 1).data;
+            
+            // Wait a short time and check if the image has changed
+            setTimeout(() => {
+              ctx.drawImage(img, 0, 0);
+              const secondFrame = ctx.getImageData(0, 0, 1, 1).data;
+              
+              // If the pixel data changed, it's likely animated
+              const isAnimated = firstFrame.some((val, i) => val !== secondFrame[i]);
+              resolve(isAnimated);
+            }, 200);
+          } else {
+            resolve(false);
+          }
+        } catch (e) {
+          resolve(false);
+        }
+      };
+      img.onerror = () => resolve(false);
+      img.src = dataUrl;
+    });
+  }
+
+  const loadImage = useCallback(async (dataUrl: string) => {
+    setCurrentImageDataUrl(dataUrl);
+    
+    // Check if the image is an animated GIF
+    const isGif = await detectAnimatedGif(dataUrl);
+    setIsGifAnimated(isGif);
+    
+    if (!isGif) {
+      // For non-animated images, load onto canvas as before
+      const img = new Image()
+      img.onload = () => {
+        // Center-crop to 500×500
+        const sw = img.naturalWidth
+        const sh = img.naturalHeight
+        const size = Math.min(sw, sh)
+        const sx = (sw - size) / 2
+        const sy = (sh - size) / 2
+        const ctx = getCtx()
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, 500, 500)
+        ctx.drawImage(img, sx, sy, size, size, 0, 0, 500, 500)
+        undoStack.current = []
+        setUndoCount(0)
+      }
+      img.src = dataUrl
     }
-    img.src = dataUrl
   }, [])
 
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -181,7 +232,12 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   }
 
   useImperativeHandle(ref, () => ({
-    toDataURL: () => canvasRef.current!.toDataURL('image/jpeg', 0.85),
+    toDataURL: () => {
+      if (isGifAnimated && currentImageDataUrl) {
+        return currentImageDataUrl; // Return original GIF data URL
+      }
+      return canvasRef.current!.toDataURL('image/jpeg', 0.85);
+    },
     loadImage,
     clear: handleClear,
   }))
@@ -189,111 +245,128 @@ export const DrawingCanvas = forwardRef<DrawingCanvasHandle, Props>(function Dra
   return (
     <div className={styles.wrapper}>
       <div className={styles.toolbar}>
-        {/* Undo */}
-        <div className={styles.toolGroup}>
-          <button
-            type="button"
-            className={styles.actionBtn}
-            disabled={undoCount === 0}
-            onClick={() => {
-              if (undoStack.current.length > 0) {
-                const snapshot = undoStack.current.pop()!
-                getCtx().putImageData(snapshot, 0, 0)
-                setUndoCount(undoStack.current.length)
-              }
-            }}
-          >
-            Undo
-          </button>
-        </div>
-
-        {/* Brush size */}
-        <div className={styles.toolGroup}>
-          <span className={styles.toolLabel}>Size</span>
-          {SIZES.map(size => (
-            <button
-              key={size}
-              type="button"
-              className={`${styles.sizeBtn} ${brushSize === size ? styles.active : ''}`}
-              onClick={() => onBrushSizeChange(size)}
-              aria-label={`Brush size ${size}px`}
-            >
-              <span
-                className={styles.sizeDot}
-                style={{ width: Math.min(size, 20), height: Math.min(size, 20) }}
-              />
-            </button>
-          ))}
-        </div>
-
-        {/* Brush shape */}
-        <div className={styles.toolGroup}>
-          <span className={styles.toolLabel}>Shape</span>
-          {(['round', 'square'] as const).map(shape => (
-            <button
-              key={shape}
-              type="button"
-              className={`${styles.shapeBtn} ${brushShape === shape ? styles.active : ''}`}
-              onClick={() => onBrushShapeChange(shape)}
-              aria-label={`${shape} brush`}
-            >
-              {shape === 'round' ? '●' : '■'}
-            </button>
-          ))}
-        </div>
-
-        {/* Colour palette */}
-        <div className={styles.toolGroup}>
-          <span className={styles.toolLabel}>Color</span>
-          <div className={styles.palette}>
-            {COLORS.map(c => (
-              <button
-                key={c}
-                type="button"
-                className={`${styles.colorBtn} ${color === c ? styles.activeColor : ''}`}
-                style={{ background: c }}
-                onClick={() => onColorChange(c)}
-                aria-label={`Color ${c}`}
-              />
-            ))}
+        {isGifAnimated ? (
+          <div className={styles.gifInfo}>
+            🎬 Animated GIF - drawing tools disabled
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Undo */}
+            <div className={styles.toolGroup}>
+              <button
+                type="button"
+                className={styles.actionBtn}
+                disabled={undoCount === 0}
+                onClick={() => {
+                  if (undoStack.current.length > 0) {
+                    const snapshot = undoStack.current.pop()!
+                    getCtx().putImageData(snapshot, 0, 0)
+                    setUndoCount(undoStack.current.length)
+                  }
+                }}
+              >
+                Undo
+              </button>
+            </div>
 
-        {/* Upload */}
-        <div className={styles.toolGroup}>
-          <button
-            type="button"
-            className={styles.actionBtn}
-            onClick={handleUploadClick}
-          >
-            Upload
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/png,image/jpeg"
-            style={{ display: 'none' }}
-            onChange={handleFileChange}
-          />
-        </div>
+            {/* Brush size */}
+            <div className={styles.toolGroup}>
+              <span className={styles.toolLabel}>Size</span>
+              {SIZES.map(size => (
+                <button
+                  key={size}
+                  type="button"
+                  className={`${styles.sizeBtn} ${brushSize === size ? styles.active : ''}`}
+                  onClick={() => onBrushSizeChange(size)}
+                  aria-label={`Brush size ${size}px`}
+                >
+                  <span
+                    className={styles.sizeDot}
+                    style={{ width: Math.min(size, 20), height: Math.min(size, 20) }}
+                  />
+                </button>
+              ))}
+            </div>
+
+            {/* Brush shape */}
+            <div className={styles.toolGroup}>
+              <span className={styles.toolLabel}>Shape</span>
+              {(['round', 'square'] as const).map(shape => (
+                <button
+                  key={shape}
+                  type="button"
+                  className={`${styles.shapeBtn} ${brushShape === shape ? styles.active : ''}`}
+                  onClick={() => onBrushShapeChange(shape)}
+                  aria-label={`${shape} brush`}
+                >
+                  {shape === 'round' ? '●' : '■'}
+                </button>
+              ))}
+            </div>
+
+            {/* Colour palette */}
+            <div className={styles.toolGroup}>
+              <span className={styles.toolLabel}>Color</span>
+              <div className={styles.palette}>
+                {COLORS.map(c => (
+                  <button
+                    key={c}
+                    type="button"
+                    className={`${styles.colorBtn} ${color === c ? styles.activeColor : ''}`}
+                    style={{ background: c }}
+                    onClick={() => onColorChange(c)}
+                    aria-label={`Color ${c}`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Upload */}
+            <div className={styles.toolGroup}>
+              <button
+                type="button"
+                className={styles.actionBtn}
+                onClick={handleUploadClick}
+              >
+                Upload
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/gif"
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
+            </div>
+          </>
+        )}
       </div>
 
       <div className={styles.canvasWrapper}>
-        <canvas
-          ref={canvasRef}
-          className={styles.canvas}
-          width={500}
-          height={500}
-          onMouseDown={handlePointerDown}
-          onMouseMove={handlePointerMove}
-          onMouseUp={handlePointerUp}
-          onMouseLeave={() => { handlePointerUp(); lastPos.current = null; setCursorPos(null) }}
-          onTouchStart={(e) => { if (e.touches.length === 1) handlePointerDown(e as unknown as React.MouseEvent) }}
-          onTouchMove={(e) => { if (e.touches.length === 1) handlePointerMove(e as unknown as React.MouseEvent) }}
-          onTouchEnd={handlePointerUp}
-          onTouchCancel={handlePointerUp}
-        />
-        {cursorPos && (
+        {isGifAnimated && currentImageDataUrl ? (
+          <img
+            src={currentImageDataUrl}
+            className={styles.gifPreview}
+            alt="Animated GIF"
+            style={{ width: 500, height: 500, objectFit: 'contain' }}
+          />
+        ) : (
+          <canvas
+            ref={canvasRef}
+            className={styles.canvas}
+            width={500}
+            height={500}
+            onMouseDown={handlePointerDown}
+            onMouseMove={handlePointerMove}
+            onMouseUp={handlePointerUp}
+            onMouseLeave={() => { handlePointerUp(); lastPos.current = null; setCursorPos(null) }}
+            onTouchStart={(e) => { if (e.touches.length === 1) handlePointerDown(e as unknown as React.MouseEvent) }}
+            onTouchMove={(e) => { if (e.touches.length === 1) handlePointerMove(e as unknown as React.MouseEvent) }}
+            onTouchEnd={handlePointerUp}
+            onTouchCancel={handlePointerUp}
+          />
+        )}
+        {!isGifAnimated && cursorPos && (
           <div
             className={styles.brushCursor}
             style={{
