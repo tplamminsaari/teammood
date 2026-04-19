@@ -17,7 +17,7 @@ export function TeamPage() {
   const router = useRouter()
   const { user, ready } = useCurrentUser()
   const [date, setDate] = useState(todayString())
-  const { entries, config, loading, newEntryIds, likeChangedIds, mutateEntries, mutateConfig, entriesError } =
+  const { entries, config, loading, newEntryIds, likeChangedIds, mutateEntries, mutateConfig, entriesError, entriesData } =
     useTeamData(date, user?.id ?? null)
 
   const [overlayEntry, setOverlayEntry] = useState<MoodEntry | null>(null)
