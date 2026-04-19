@@ -223,3 +223,23 @@ Reference documents:
 **Status:** `done`
 **Description:** Fast mouse movement produces dotted/gapped lines because the canvas only stamps the brush at individual mouse event positions. Fix by interpolating intermediate stamps along the straight-line segment between the previous and current mouse position on every `mousemove` event. Stamp spacing should be small enough (~1px step) to guarantee no visible gaps at any brush size or mouse speed.
 **Produces:** Updated `DrawingCanvas.tsx`
+
+### T30 · GIF Image Support
+**Status:** `todo`
+**Description:** Modify the frontend to support GIF images. When uploading an animated GIF, display the image instead of the canvas and disable all drawing tools. For non-animated GIFs or static images, place them on the canvas allowing users to draw over them.
+**Requires:** T14
+**Produces:**
+- Updated `DrawingCanvas.tsx` to detect animated GIFs
+- Conditional rendering: show canvas with drawing tools for static images, show image preview with disabled tools for animated GIFs
+- Updated file upload to accept GIF format (`image/gif`)
+- Logic to determine if uploaded image is animated GIF
+
+### T31 · Animated Like Notification
+**Status:** `todo`
+**Description:** When a user receives updated like count information via polling, display an animated heart that moves upwards and fades away on their screen. This visual feedback should appear when `useTeamData` detects an increased like count for any entry.
+**Requires:** T21, T08
+**Produces:**
+- Animation component for the floating heart effect
+- Integration with `useTeamData` to trigger animation when like count increases
+- Visual feedback that appears above the liked mood badge
+- CSS animations for the upward movement and fade-out effect
