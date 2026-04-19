@@ -5,6 +5,37 @@
   background: var(--bg);
 }
 
+/* ── Connection Banner ── */
+.connectionBanner {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #dc2626; /* red-600 */
+  color: white;
+  padding: 12px 20px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Adjust header position when banner is visible */
+.connectionBanner + .header {
+  top: 52px; /* Height of banner + some margin */
+}
+
 /* ── Header ── */
 .header {
   position: sticky;

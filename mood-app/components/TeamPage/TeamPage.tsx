@@ -21,6 +21,7 @@ export function TeamPage() {
     useTeamData(date, user?.id ?? null)
 
   const [overlayEntry, setOverlayEntry] = useState<MoodEntry | null>(null)
+  const [showConnectionError, setShowConnectionError] = useState(false)
 
   // Sprint name local edit state
   const [sprintName, setSprintName] = useState('')
@@ -106,6 +107,11 @@ export function TeamPage() {
 
   return (
     <div className={styles.page}>
+      {showConnectionError && (
+        <div className={styles.connectionBanner}>
+          ⚠️ Database connection lost — some features may not work properly
+        </div>
+      )}
       <header className={styles.header}>
         <span className={styles.appName}>Mood</span>
 
