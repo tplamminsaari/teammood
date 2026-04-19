@@ -17,11 +17,12 @@ export function TeamPage() {
   const router = useRouter()
   const { user, ready } = useCurrentUser()
   const [date, setDate] = useState(todayString())
-  const { entries, config, loading, newEntryIds, likeChangedIds, mutateEntries, mutateConfig } =
+  const { entries, config, loading, newEntryIds, likeChangedIds, mutateEntries, mutateConfig, entriesError } =
     useTeamData(date, user?.id ?? null)
 
   const [overlayEntry, setOverlayEntry] = useState<MoodEntry | null>(null)
   const [showConnectionError, setShowConnectionError] = useState(false)
+  const successfulResponsesRef = useRef(0)
 
   // Sprint name local edit state
   const [sprintName, setSprintName] = useState('')
@@ -35,6 +36,24 @@ export function TeamPage() {
       savedSprintName.current = config.sprintName
     }
   }, [config.sprintName])
+
+  // Monitor connection errors and show/hide banner
+  useEffect(() => {
+    if (entriesError) {
+      // API returned an error, show the banner
+      setShowConnectionError(true)
+      successfulResponsesRef.current = 0 // Reset success counter
+    } else if (!loading && entriesData) {
+      // API succeeded, count this as a successful response
+      successfulResponsesRef.current += 1
+      
+      // Hide banner after 3 consecutive successful responses (auto-recovery)
+      if (successfulResponsesRef.current >= 3) {
+        setShowConnectionError(false)
+        successfulResponsesRef.current = 0
+      }
+    }
+  }, [entriesError, loading, entriesData])
 
   // Route guard — redirect to welcome if no user
   useEffect(() => {

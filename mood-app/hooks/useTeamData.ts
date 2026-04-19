@@ -12,11 +12,16 @@ export function useTeamData(date: string, userId: number | null) {
 
   const {
     data: entriesData,
+    error: entriesError,
     mutate: mutateEntries,
     isLoading: entriesLoading,
   } = useSWR(entriesKey, fetcher, { refreshInterval: 8000 })
 
-  const { data: configData, mutate: mutateConfig } = useSWR(configKey, fetcher, {
+  const {
+    data: configData,
+    error: configError,
+    mutate: mutateConfig
+  } = useSWR(configKey, fetcher, {
     refreshInterval: 30000, // 30 seconds instead of 8 seconds
   })
 
@@ -48,6 +53,9 @@ export function useTeamData(date: string, userId: number | null) {
   return {
     entries,
     config,
+    entriesData,
+    entriesError,
+    configError,
     newEntryIds: newEntryIdsRef.current,
     likeChangedIds: likeChangedIdsRef.current,
     loading: entriesLoading,
